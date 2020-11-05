@@ -9,7 +9,6 @@ sr = par.sr;
 w_pre = par.w_pre;
 w_post = par.w_post;
 
-
 if isfield(par,'ref_ms')
     ref = floor(par.ref_ms * par.sr/1000);
 else

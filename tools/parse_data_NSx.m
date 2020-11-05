@@ -92,10 +92,15 @@ for fi = 1:length(filenames)
             fin = min(j*samples_per_channel,N)+DataPoints(part-1);
             tcum = tcum + toc;  % this is because openNSx has a tic at the beginning
             NSx = openNSx('read',filename,['t:' num2str(ini) ':' num2str(fin)]);
+            fix_ini = 0;
+            if size(NSx.Data,2) > (fin-ini +1)
+                fix_ini = size(NSx.Data,2) - (fin-ini +1);
+                warning(sprintf('segment %d: %d extra samples will be removed.',j,fix_ini))
+            end
             for i = 1:nchan
                 if ~isempty(outfile_handles{i})
                     %BE AWARE THAT THE RAW DATA IN THE NS5 AND NC5 IS SCALED UP BY A FACTOR OF 4
-                    fwrite(outfile_handles{i},NSx.Data(i,:),'int16');
+                    fwrite(outfile_handles{i},NSx.Data(i,(1+fix_ini):end),'int16');
                 end
             end
             fprintf('Segment %d out of %d processed. Data Point Read = %d \n',j,num_segments,size(NSx.Data,2));
@@ -111,7 +116,8 @@ metadata = struct;
 if exist(metadata_file,'file')
     metadata = load(metadata_file);
 end
-
+lts = sum([files(:).lts]);
+fprintf('%d data points writed per channel\n',lts)
 if strcmp(nsx_ext,'5') 
     if isfield(metadata,'parsed_chs')
         parsed_chs = union(parsed_chs,metadata.parsed_chs);
