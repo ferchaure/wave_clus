@@ -117,7 +117,7 @@ if exist(metadata_file,'file')
     metadata = load(metadata_file);
 end
 lts = sum([files(:).lts]);
-fprintf('%d data points writed per channel\n',lts)
+fprintf('%d data points written per channel\n',lts)
 if strcmp(nsx_ext,'5') 
     if isfield(metadata,'parsed_chs')
         parsed_chs = union(parsed_chs,metadata.parsed_chs);

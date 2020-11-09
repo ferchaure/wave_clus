@@ -180,11 +180,7 @@ function get_spikes_single(filename, par_input)
         
         for n = 1:data_handler.max_segments
             x = data_handler.get_segment();
-            %<----  Add here extra processing of the signal (x)
-            if par.preprocessing
-                [x, process_info] = pre_processing(x,par.filename);
-            end
-            
+
             [new_spikes, aux_th, new_index]  = amp_detect(x, par);
             index = [index data_handler.index2ts(new_index)]; %new_index to ms
             spikes = [spikes; new_spikes];
@@ -196,7 +192,8 @@ function get_spikes_single(filename, par_input)
     par = struct;
     par = update_parameters(par, current_par, 'detect');
     par.detection_date =  datestr(now);
-    if exist('process_info','var')
+    if par.preprocessing
+        [~,process_info] = pre_processing([],filename);
         par.process_info = process_info;
     end
     %<----  Add here auxiliar parameters

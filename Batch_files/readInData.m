@@ -254,6 +254,11 @@ classdef readInData < handle
                 x = double(x);
             end
 
+            if obj.par.preprocessing
+                %<----  Add here extra processing of the signal (x)
+                x = pre_processing(x,obj.par.filename);
+            end
+            
             if ~obj.with_psegment && obj.n_to_read == 1 && obj.par.cont_segment
                 lplot = min(floor(60*obj.par.sr), length(x));
                 xf_detect = spike_detection_filter(x(1:lplot), obj.par);
