@@ -177,11 +177,12 @@ function get_spikes_single(filename, par_input)
     else    
         index = [];
         spikes = [];
-        
+        remove_counter = 0;
         for n = 1:data_handler.max_segments
             x = data_handler.get_segment();
 
-            [new_spikes, aux_th, new_index]  = amp_detect(x, par);
+            [new_spikes, aux_th, new_index,aux_rm]  = amp_detect(x, par);
+            remove_counter = remove_counter + aux_rm;
             index = [index data_handler.index2ts(new_index)]; %new_index to ms
             spikes = [spikes; new_spikes];
             threshold = [threshold, aux_th];
@@ -201,9 +202,9 @@ function get_spikes_single(filename, par_input)
     if current_par.cont_segment && data_handler.with_raw
         [psegment, sr_psegment] = data_handler.get_signal_sample();
         try
-			save([data_handler.nick_name '_spikes'], 'spikes', 'index', 'par','psegment','sr_psegment','threshold')
+			save([data_handler.nick_name '_spikes'], 'spikes', 'index', 'par','psegment','sr_psegment','threshold','remove_counter')
 		catch
-			save([data_handler.nick_name '_spikes'], 'spikes', 'index', 'par','psegment','sr_psegment','threshold','-v7.3')
+			save([data_handler.nick_name '_spikes'], 'spikes', 'index', 'par','psegment','sr_psegment','threshold','remove_counter','-v7.3')
 		end
     else
 		try

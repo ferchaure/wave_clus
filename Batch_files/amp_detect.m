@@ -1,4 +1,4 @@
-function [spikes,thr,index] = amp_detect(x, par)
+function [spikes,thr,index,remove_counter] = amp_detect(x, par)
 % Detect spikes with amplitude thresholding. Uses median estimation.
 % Detection is done with filters set by fmin_detect and fmax_detect. Spikes
 % are stored for sorting using fmin_sort and fmax_sort. This trick can
@@ -82,12 +82,15 @@ ls = w_pre+w_post;
 spikes = zeros(nspk,ls+4);
 
 xf(length(xf)+1:length(xf)+w_post)=0;
-
+remove_counter = 0;
 for i=1:nspk                          %Eliminates artifacts
     if max(abs( xf(index(i)-w_pre:index(i)+w_post) )) < thrmax
         spikes(i,:)=xf(index(i)-w_pre-1:index(i)+w_post+2);
+    else
+        remove_counter = 1 + remove_counter;
     end
 end
+
 aux = find(spikes(:,w_pre)==0);       %erases indexes that were artifacts
 spikes(aux,:)=[];
 index(aux)=[];
