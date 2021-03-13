@@ -115,15 +115,15 @@ for fi = 1:length(filenames)
     new_files(fi).lts = lts;
     new_files(fi).which_cells = init_cell:length(DataPoints);
     
-    DataPoints = [0 DataPoints]; %added for use as starting index
+	csDataPoints = [0 cumsum(DataPoints)]; %added for use as starting index
     samples_per_channel = ceil(max_memo/(nchan*length(NSx.MetaTags.DataPoints))/2);
-    for part = 1 + init_cell:length(DataPoints)
+    for part = init_cell:length(DataPoints)
         N = floor(DataPoints(part));   % total data points 
         num_segments = ceil(N/samples_per_channel);
         fprintf('Data will be processed in %d segments of %d samples each.\n',num_segments,min(samples_per_channel,N))
         for j=1:num_segments
-            ini = (j-1)*samples_per_channel+1+floor(DataPoints(part-1));
-            fin = min(j*samples_per_channel,N)+floor(DataPoints(part-1));
+            ini = (j-1)*samples_per_channel+1+floor(csDataPoints(part));
+            fin = min(j*samples_per_channel,N)+floor(csDataPoints(part));
             tcum = tcum + toc;  % this is because openNSx has a tic at the beginning
             NSx = openNSx('read',filename,['t:' num2str(ini) ':' num2str(fin)]);
             zeros2add = round(NSx.MetaTags.Timestamp*NSx.MetaTags.SamplingFreq/NSx.MetaTags.TimeRes);
@@ -145,8 +145,8 @@ for fi = 1:length(filenames)
     
     tcum = tcum + toc;
     fprintf('Total time spent in parsing the data was %s secs.\n',num2str(tcum, '%0.1f')); 
-    if length(DataPoints)>2 && isempty(which_nsp)
-        warning('Automatically merged %d cells of data.', length(DataPoints)-1 )
+    if length(DataPoints)>1 && isempty(which_nsp)
+        warning('Automatically merged %d cells of data.', length(DataPoints))
         fprintf('NSx.MetaTags.Timestamp: %s', formatvector(NSx.MetaTags.Timestamp))
         fprintf('NSx.MetaTags.DataPoints: %s', formatvector(NSx.MetaTags.DataPoints))
     end
@@ -202,7 +202,7 @@ for i = 1:length(new_files)
     files(pos).first_sample = new_files(i).first_sample;
     files(pos).lts = new_files(i).lts;
     files(pos).which_nsp = which_nsp;
-    files(pos).which_cells = init_cell:(length(DataPoints)-1);
+    files(pos).which_cells = init_cell:(length(DataPoints));
 end
 
 save(metadata_file, 'NSx','files')
