@@ -80,6 +80,10 @@ classdef readInData < handle
                     spikes_file = [obj.nick_name '_spikes.mat'];
                 else
                     spikes_file = obj.spikes_file;
+                    if ~exist(spikes_file,'file') && exist([obj.nick_name '_spikes.mat'],'file')
+                        spikes_file = [obj.nick_name '_spikes.mat'];
+                        obj.spikes_file = spikes_file;
+                    end
                 end
                 if exist(spikes_file,'file')
                     obj.with_wc_spikes = true;

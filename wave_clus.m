@@ -193,9 +193,9 @@ handles.par.fname = ['data_' data_handler.nick_name];
 handles.par.nick_name = data_handler.nick_name;
 handles.par.fnamesave = handles.par.fname;                  %filename if "save clusters" button is pressed
 handles.par.fnamespc = 'data_wc';
-handles.par.spikes_file = data_handler.spikes_file;  
 handles.par = data_handler.update_par(handles.par);
 check_WC_params(handles.par)
+handles.par.spikes_file = data_handler.spikes_file;  
 
 if data_handler.with_results %data have _times files
     [clu, tree, spikes, index, inspk, ipermut, classes, forced,temp] = data_handler.load_results();
@@ -569,10 +569,10 @@ if developer_mode
 	var_list = strcat(var_list , ' ,''rejected''');
 end
 
-if isempty(handles.par.spikes_file)
+if isempty(used_par.spikes_file)
     var_list = strcat(var_list , ' ,''spikes''');
 else
-    spikes_file = handles.par.spikes_file;
+    spikes_file = used_par.spikes_file;
     var_list = strcat(var_list , ' ,''spikes_file''');
 end
 
